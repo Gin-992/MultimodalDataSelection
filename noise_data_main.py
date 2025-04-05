@@ -9,14 +9,15 @@ from protuberance.image.noise_factory import NoiseFactory
 
 # 配置常量集中管理 [1,5](@ref)
 CONFIG = {
-    "HOME_DIR": Path("/Volumes/Ming-Data/Dataset/Sample-MM-Data"),
+    "HOME_DIR": Path("/Volumes/Ming-Data/Dataset/MM-Data"),
     "SOURCE_DATA_PATHS": {
-        "cn": "/Volumes/Ming-Data/Dataset/MMBench/cn/*.parquet",
+        # "cn": "/Volumes/Ming-Data/Dataset/MMBench/cn/*.parquet",
         "en": "/Volumes/Ming-Data/Dataset/MMBench/en/*.parquet",
-        "cc": "/Volumes/Ming-Data/Dataset/MMBench/cc/*.parquet"
+        # "cc": "/Volumes/Ming-Data/Dataset/MMBench/cc/*.parquet"
     },
-    "NOISE_TYPES": ["gaussian", "salt_pepper"],
-    "MAX_SAMPLES": 100
+    # "NOISE_TYPES": ["gaussian", "salt_pepper"],
+    "NOISE_TYPES": [],
+    "MAX_SAMPLES": 10000000000000000000000000000000000000000000000000000000000000
 }
 
 
@@ -76,17 +77,18 @@ def main():
 
     # 加载数据集
     dataset = load_dataset("parquet", data_files=CONFIG["SOURCE_DATA_PATHS"])
-    filtered_dataset = dataset["en"].filter(
-        lambda ex: ex["category"] == "object_localization"
-    )
+    # filtered_dataset = dataset["en"].filter(
+    #     lambda ex: ex["category"] == "object_localization"
+    # )
+    filtered_dataset = dataset["en"]
 
     sampled_data = []
     for idx in tqdm(range(min(filtered_dataset.num_rows, CONFIG["MAX_SAMPLES"]))):
         entry = filtered_dataset[idx]
 
         # 跳过非目标类别数据
-        if entry["category"] != "object_localization":
-            continue
+        # if entry["category"] != "object_localization":
+        #     continue
 
         # 生成记录
         record = process_dataset_entry(len(sampled_data) + 1, entry, output_dirs)

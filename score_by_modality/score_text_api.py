@@ -46,7 +46,7 @@ def chat(
     except requests.RequestException as e:
         raise RuntimeError(f"Error during API request: {e}") from e
 
-    return None, model_resp
+    return model_resp
 
 
 def load_json(file_path: str) -> Any:
@@ -117,7 +117,7 @@ def process_entries(
         conversations = entry.get("conversations", [])
         combined_prompt = combine_conversations(conversations)
 
-        _, ret_msg = chat(
+        ret_msg = chat(
             model_name,
             system_message,
             combined_prompt,
@@ -173,3 +173,65 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+"""You are provided with a text question. Your task is to predict which specific task and sub-task should be performed based on the question alone. The tasks are divided into several categories, and each category has specific definitions to guide you. Use these definitions to identify the appropriate task and sub-task.
+
+Task Categories and Definitions:
+1. Coarse Perception:
+    (1) Image Style: Determine the type of image (e.g., photograph, painting, CT scan, etc.)
+    (2) Image Scene: Identify the environment (e.g., indoors, outdoors, forest, city, etc.)
+    (3) Image Emotion: Recognize the subjective emotion conveyed (e.g., cheerful, sad, oppressive)
+    (4) Image Quality: Assess the image quality (e.g., blurry, bright, dark, high contrast)
+    (5) Image Topic: Identify the subject of the image (e.g., portrait, scenery, close-up of an object)
+2. Fine-grained Perception (single-instance):
+    (1) Object Localization: Determine the position and orientation of a single object in the image
+    (2) Attribute Recognition: Recognize attributes such as shape, texture, or appearance
+    (3) Celebrity Recognition: Recognize well-known personalities, landmarks, or famous objects
+    (4) OCR (Optical Character Recognition): Extract and recognize text, formulas, or sheets present in the image
+3. Fine-grained Perception (cross-instance):
+    (1) Spatial Relationship: Determine the relative positions between multiple objects
+    (2) Attribute Comparison: Compare attributes of different objects (e.g., size, shape, color)
+    (3) Action Recognition: Recognize human actions, such as pose, movement, or interactions between humans and objects
+4. Attribute Reasoning:
+    (1) Physical Property Reasoning: Predict physical properties of an object (e.g., fluidity of water, volatility of sulfuric acid)
+    (2) Function Reasoning: Predict the function or use of an object (e.g., broom for sweeping, pen for writing)
+    (3) Identity Reasoning: Predict the identity or role of a person or object based on appearance (e.g., occupation based on clothing)
+5. Relation Reasoning:
+    (1) Social Relation: Identify relationships between humans (e.g., father and son, husband and wife, friend)
+    (2) Physical Relation: Describe spatial and physical relationships between objects (e.g., above, below, in contact)
+    (3) Nature Relation: Identify abstract relationships in nature (e.g., predation, symbiosis, coexistence)
+6. Logic Reasoning:
+    (1) Structuralized Image-Text Understanding: Interpret structured data in images with text, such as charts or formulas
+    (2) Future Prediction: Predict future events or outcomes based on current information (e.g., weather change, emotional shift)
+
+Steps to Follow:
+1. Review the Question: Read the question carefully and understand what information is being asked for.
+2. Identify the Task Category: Based on the definitions above, categorize the task into one of the six categories.
+3. Select the Sub-task: Choose the most appropriate sub-task from the selected category based on the specific details of the question.
+4. Output the Task and Sub-task: Predict the task category and the corresponding sub-task.
+
+Example Input:
+    Question: "What is the relationship between the dog and the cat in the image?"
+Output:
+    {"task": "Fine-grained Perception (cross-instance)", "sub-task": "Spatial Relationship"}
+"""
+
+
+"""You are provided with an image. Your task is to generate a caption that predicts a future event or outcome based on the current visual cues in the image. Focus on identifying trends, patterns, or signs that indicate a forthcoming change, such as a weather shift, an evolving atmosphere, or an anticipated event. Your caption should logically project what might happen next based on the present state depicted in the image.
+
+Guidelines:
+
+1. Examine the Image:
+    (1) Carefully observe the current state of the image.
+    (2) Identify any visual cues or trends that could suggest an imminent change (e.g., darkening clouds, shifting colors, facial expressions).
+2. Identify Clues for Future Change:
+    (1) Look for indicators such as environmental transitions (e.g., the sky darkening might hint at an approaching storm) or emotional cues (e.g., a person's serious expression might suggest a forthcoming emotional shift).
+3. Predict the Future Outcome:
+    (1) Based on the observed cues, infer a likely future event or outcome.
+    (2) Ensure that the prediction logically follows from the current visual information.
+4. Craft a Concise Caption:
+    (1) Write a single sentence caption that clearly communicates the predicted outcome.
+    (2) Focus solely on the future event or change without including unrelated details.
+
+Your final caption should succinctly capture the anticipated future event or outcome based on the visual information provided in the image.
+"""

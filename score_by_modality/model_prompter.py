@@ -50,13 +50,6 @@ def perform_image_task(model, image_path, instruction):
     return response['choices'][0]['message']['content']
 
 
-def perform_text_task(model, text, instruction):
-    """Perform a text-based task using the text API."""
-    sys_msg = "You are a helpful assistant."
-    response = text_chat(model, sys_msg, instruction, text, 2048, 0.9)
-    return response['choices'][0]['message']['content']
-
-
 def perform_caption_scoring(model, image_path, caption, instruction):
     """Score a caption (for a given image) using the text API."""
     sys_msg = "You are an evaluator for image captions."
@@ -77,6 +70,38 @@ def perform_task_prediction(model, question, instruction):
     sys_msg = "You are a helpful assistant."
     prompt = f"{instruction}\nPrediction which task of the following question:\n{question}"
     response = text_chat(model, sys_msg, prompt, 256, 0.1, CHAT_URL)
+    return response['choices'][0]['message']['content']
+
+
+def perform_task_caption(model, task, image_path, instructions):
+    image_fn = os.path.basename(image_path)
+    image_dir = os.path.dirname(image_path)
+
+    sys_msg = "You are a helpful assistant."
+    task_mapping = {
+        "Image Style": "image_style_captioning",
+        "Image Scene": "image_scene_captioning",
+        "Image Emotion": "image_emotion_captioning",
+        "Image Quality": "image_quality_captioning",
+        "Image Topic": "image_topic_captioning",
+        "Object Localization": "object_localization_captioning",
+        "Attribute Recognition": "attribute_recognition_captioning",
+        "Celebrity Recognition": "celebrity_recognition_captioning",
+        "OCR (Optical Character Recognition)": "ocr_captioning",
+        "Spatial Relationship": "spatial_relation_captioning",
+        "Attribute Comparison": "attribute_comparison_captioning",
+        "Action Recognition": "action_recognition",
+        "Physical Property Reasoning": "physical_property_captioning",
+        "Function Reasoning": "function_captioning",
+        "Identity Reasoning": "identity_captioning",
+        "Social Relation": "social_relation_captioning",
+        "Physical Relation": "physical_relation_captioning",
+        "Nature Relation": "nature_relation_captioning",
+        "Structuralized Image-Text Understanding": "structuralized_image_text_captioning",
+        "Future Prediction": "future_prediction_captioning"
+    }
+    prompt = f"{instructions[task_mapping[task]]}"
+    response = image_chat(model, sys_msg, prompt, image_fn, 2048, 0.1, CHAT_URL, image_dir)
     return response['choices'][0]['message']['content']
 
 
@@ -134,6 +159,13 @@ def process_task_prediction(data, instruction, model):
         entry["predicted_task"] = perform_task_prediction(model, question, instruction)
     return data
 
+def process_task_captioning(data, instruction, model):
+    for entry in tqdm(data, desc="Task captioning"):
+        # image_path = os.path.join("/Volumes/Ming-Data/Dataset/MM-Data/untouched", os.path.basename(entry["image_paths"]["untouched"]))
+        # entry["caption"] = perform_task_caption(model, entry["sub-task"], image_path, instruction)
+        entry["caption"] = perform_task_caption(model, entry["sub-task"], entry["image_paths"]["untouched"], instruction)
+    return data
+
 
 # --- Task Processor Mapping ---
 TASK_PROCESSORS = {
@@ -141,6 +173,7 @@ TASK_PROCESSORS = {
     "score_caption_question": process_caption_scoring,
     "score_embedding_question": process_embedding_scoring,
     "predict_task": process_task_prediction,
+    "task_captioning": process_task_captioning,
 }
 
 

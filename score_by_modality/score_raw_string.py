@@ -2,16 +2,18 @@ import json
 import regex as re
 import statistics
 
-with open("/Users/ming/PycharmProjects/task_prediction.json", "r") as f:
+with open("/Users/ming/PycharmProjects/MultimodalDataSelection/task_prediction.json", "r") as f:
     data = json.load(f)
 # pattern = r'\{.*?\}'
 pattern = r'(?s)(\{(?:[^{}]|(?R))*\}|\[(?:[^\[\]]|(?R))*\])'
 scores = []
 for item in data:
     predicted_task = item['predicted_task']
+    predicted_task = predicted_task.split("</think>")[-1]
     matched = re.search(pattern, predicted_task)
     if matched:
         json_str3 = matched.group()
+        json_str3.replace("\'", "\"")
         rating = json.loads(json_str3)
         item['task'] = rating['task']
         item['sub-task'] = rating['sub-task']
@@ -37,7 +39,7 @@ for item in data:
     #     rating = json.loads(json_str3)
     #     item['salt_pepper_rating'] = rating['rating']
     # scores.append(item)
-with open("/Users/ming/PycharmProjects/task_prediction.json", "w") as f:
+with open("/Users/ming/PycharmProjects/MultimodalDataSelection/task_prediction_clean.json", "w") as f:
     json.dump(scores, f, indent=4, default=str)
 
 # Filter out entries with any missing rating value and count missing fields

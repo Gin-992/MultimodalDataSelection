@@ -2,7 +2,7 @@ import json
 import regex as re
 import statistics
 
-with open("/Users/ming/PycharmProjects/MultimodalDataSelection/task_prediction.json", "r") as f:
+with open("/output/task_prediction.json", "r") as f:
     data = json.load(f)
 # pattern = r'\{.*?\}'
 pattern = r'(?s)(\{(?:[^{}]|(?R))*\}|\[(?:[^\[\]]|(?R))*\])'
@@ -39,7 +39,7 @@ for item in data:
     #     rating = json.loads(json_str3)
     #     item['salt_pepper_rating'] = rating['rating']
     # scores.append(item)
-with open("/Users/ming/PycharmProjects/MultimodalDataSelection/task_prediction_clean.json", "w") as f:
+with open("/output/task_prediction_clean.json", "w") as f:
     json.dump(scores, f, indent=4, default=str)
 
 # Filter out entries with any missing rating value and count missing fields

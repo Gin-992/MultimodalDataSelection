@@ -6,22 +6,27 @@ import glob
 
 def split_json(input_file, output_dir, num_splits):
     """
-    Split a JSON file containing a list of entries into `num_splits` files,
-    each with an even number of entries. Raises an error if entries cannot be evenly divided.
+    Split a JSON file containing a list of entries into `num_splits` files.
+    If entries cannot be evenly divided, extra entries go to the last file.
+    File indices start from 0.
     """
     with open(input_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
     if not isinstance(data, list):
         raise ValueError("Input JSON must be a list of entries.")
     total = len(data)
-    if total % num_splits != 0:
-        raise ValueError(f"Cannot split {total} entries into {num_splits} even parts.")
     chunk_size = total // num_splits
+    if chunk_size == 0:
+        raise ValueError(f"Number of splits {num_splits} is greater than total entries {total}.")
 
     os.makedirs(output_dir, exist_ok=True)
     for i in range(num_splits):
-        chunk = data[i * chunk_size:(i + 1) * chunk_size]
-        out_path = os.path.join(output_dir, f"part_{i+1}.json")
+        start = i * chunk_size
+        if i == num_splits - 1:
+            chunk = data[start:]
+        else:
+            chunk = data[start:start + chunk_size]
+        out_path = os.path.join(output_dir, f"part_{i}.json")
         with open(out_path, 'w', encoding='utf-8') as out_f:
             json.dump(chunk, out_f, indent=4, ensure_ascii=False)
         print(f"Written {len(chunk)} entries to {out_path}")
@@ -57,15 +62,13 @@ if __name__ == '__main__':
     )
     subparsers = parser.add_subparsers(dest='command', required=True)
 
-    # Split command
-    split_parser = subparsers.add_parser('split', help='Split a JSON into multiple even-sized JSON files')
+    split_parser = subparsers.add_parser('split', help='Split a JSON into multiple JSON files')
     split_parser.add_argument('--input', '-i', required=True, help='Path to input JSON file')
     split_parser.add_argument('--num', '-n', type=int, required=True,
-                              help='Number of equal parts to split into')
+                              help='Number of parts to split into')
     split_parser.add_argument('--output-dir', '-o', required=True,
                               help='Directory to save split JSON files')
 
-    # Aggregate command
     agg_parser = subparsers.add_parser('aggregate', help='Aggregate multiple JSON files into one')
     agg_parser.add_argument('--input-dir', '-i', required=True,
                             help='Directory containing JSON files to aggregate')

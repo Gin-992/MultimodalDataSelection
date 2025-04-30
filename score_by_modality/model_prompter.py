@@ -36,6 +36,12 @@ def parse_args():
                         help="Path to the instruction set JSON file")
     parser.add_argument("--model", type=str, default="qwen2.5-vl-7b-instruct",
                         help="Model name to use")
+    parser.add_argument(
+        "--chat-url",
+        type=str,
+        default="http://localhost:1234/v1/chat/completions",
+        help="URL for the chat completions API"
+    )
     return parser.parse_args()
 
 
@@ -237,6 +243,9 @@ def get_instruction_for_task(task, instructions):
 
 def main():
     args = parse_args()
+    # Override the global CHAT_URL if provided via argument
+    global CHAT_URL
+    CHAT_URL = args.chat_url
 
     # Load instructions from the instruction set file.
     instructions = load_instructions(args.instruction_file)

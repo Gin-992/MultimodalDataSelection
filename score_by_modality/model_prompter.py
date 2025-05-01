@@ -11,6 +11,17 @@ from score_by_modality.score_image_api import chat as image_chat
 from score_by_modality.score_text_api import chat as text_chat
 
 CHAT_URL = "http://localhost:1234/v1/chat/completions"
+IMAGE_BASE = ""
+
+
+# Helper function to concatenate conversations
+def concat_conversations(conversations):
+    """
+    Concatenate a list of conversation dicts into a single string.
+    Each dict has 'from' and 'value' keys.
+    """
+    # Format each message as "speaker: message"
+    return "\n".join(f"{msg['from']}: {msg['value']}" for msg in conversations)
 
 
 def load_instructions(file_path):
@@ -30,6 +41,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Multi-Task Processing Script")
     parser.add_argument("--task", type=str,
                         help="Task name to perform. Options: captioning, caption_scoring, embedding_scoring")
+    parser.add_argument(
+        "--image-base",
+        type=str,
+        default="",
+        help="Base directory path for image files"
+    )
     parser.add_argument("--input_json", type=str, help="Path to the input JSON dataset")
     parser.add_argument("--output_json", type=str, help="Path to save the output JSON results")
     parser.add_argument("--instruction_file", type=str, default="instructions.json",
@@ -48,8 +65,10 @@ def parse_args():
 # --- Chat Methods ---
 def perform_image_caption(model, image_path, instruction):
     """Perform an image-based task using the image API."""
-    image_fn = os.path.basename(image_path)
-    image_dir = os.path.dirname(image_path)
+    # Prepend IMAGE_BASE to the image path
+    full_path = os.path.join(IMAGE_BASE, image_path)
+    image_fn = os.path.basename(full_path)
+    image_dir = os.path.dirname(full_path)
     sys_msg = "You are a helpful assistant."
     response = image_chat(model, sys_msg, instruction, image_fn, 2048, 0.9, CHAT_URL, image_dir)
     return response['choices'][0]['message']['content']
@@ -71,8 +90,10 @@ def perform_task_prediction(model, question, instruction):
 
 
 def perform_task_caption(model, task, image_path, instructions):
-    image_fn = os.path.basename(image_path)
-    image_dir = os.path.dirname(image_path)
+    # Prepend IMAGE_BASE to the image path
+    full_path = os.path.join(IMAGE_BASE, image_path)
+    image_fn = os.path.basename(full_path)
+    image_dir = os.path.dirname(full_path)
 
     sys_msg = "You are a helpful assistant."
     task_mapping = {
@@ -102,6 +123,74 @@ def perform_task_caption(model, task, image_path, instructions):
     return response['choices'][0]['message']['content']
 
 
+def perform_image_quality(model, image_path, instruction):
+    """
+    Perform an image quality assessment using the image API.
+    """
+    # Prepend IMAGE_BASE to the image path
+    full_path = os.path.join(IMAGE_BASE, image_path)
+    image_fn = os.path.basename(full_path)
+    image_dir = os.path.dirname(full_path)
+    sys_msg = "You are an evaluator for image quality assessment."
+    prompt = instruction
+    # Call the image API to assess quality
+    response = image_chat(model, sys_msg, prompt, image_fn, 2048, 0.5, CHAT_URL, image_dir)
+    return response['choices'][0]['message']['content']
+
+
+def perform_text_quality(model, text, instruction):
+    """
+    Perform a text quality assessment using the text API.
+    """
+    sys_msg = "You are an evaluator for text quality assessment."
+    prompt = f"{instruction}\nText: {text}"
+    response = text_chat(model, sys_msg, prompt, 2048, 0.5, CHAT_URL)
+    return response['choices'][0]['message']['content']
+
+
+# --- Post-Processing Functions ---
+def process_captioning(data, instruction, model):
+    """
+    Process image captioning:
+    For each entry, generate captions for different image variations.
+    """
+    for entry in tqdm(data, desc="Captioning images"):
+        entry["general_caption"] = perform_image_caption(model, entry["image"], instruction)
+    return data
+
+
+def process_caption_scoring(data, instruction, model):
+    """
+    Process caption scoring:
+    For each entry, score existing captions for different image variations.
+    """
+    for entry in tqdm(data, desc="Scoring captions"):
+        # Concatenate multi-turn conversation into a single string
+        conversation_str = concat_conversations(entry["conversations"])
+
+        # It is assumed that captions are already generated in the entry.
+        caption = f"General caption: {entry['general_caption']}\nDetail caption: {entry['task_caption']}"
+        entry["caption_score"] = perform_caption_scoring(
+            model, conversation_str, caption, instruction)
+    return data
+
+
+def process_task_prediction(data, instruction, model):
+    for entry in tqdm(data, desc="Task prediction"):
+        # Concatenate multi-turn conversation into a single string
+        conversation_str = concat_conversations(entry["conversations"])
+
+        entry["predicted_task"] = perform_task_prediction(model, conversation_str, instruction)
+    return data
+
+
+def process_task_captioning(data, instruction, model):
+    for entry in tqdm(data, desc="Task captioning"):
+        entry["task_caption"] = perform_task_caption(model, entry["sub-task"], entry["image"],
+                                                     instruction)
+    return data
+
+
 def process_image_quality(data, instruction, model):
     """
     Process image quality assessment:
@@ -116,13 +205,14 @@ def process_image_quality(data, instruction, model):
         "The quality of the image is excellent.": 5,
     }
     for entry in tqdm(data, desc="Assessing image quality"):
-        image_path = entry["image_paths"]["untouched"]
+        image_path = entry["image"]
         # Generate image quality assessment using the image API
         assessment = perform_image_quality(model, image_path, instruction)
         if assessment not in quality_map:
             raise ValueError(f"Unexpected quality assessment: {assessment}")
-        entry["image_quality_assessment"] = quality_map[assessment]
+        entry["image_quality_score"] = quality_map[assessment]
     return data
+
 
 def process_text_quality(data, instruction, model):
     """
@@ -130,96 +220,13 @@ def process_text_quality(data, instruction, model):
     For each entry, assess text quality using the text API.
     """
     for entry in tqdm(data, desc="Assessing text quality"):
-        options = entry["options"]
-        question = entry["question"]
-        options = filter(lambda x: x != "nan", options)
-        opt_str = ""
-        for i, option in enumerate(options):
-            letter = chr(ord('A') + i)
-            opt_str += f"{opt_str}{letter}. {option}\n"
+        # Concatenate multi-turn conversation into a single string
+        conversation_str = concat_conversations(entry["conversations"])
 
-        text = f"Question: {question}\n{opt_str}"
         # Extract the text to assess; adjust the key if your entries use a different field
-        assessment = perform_text_quality(model, text, instruction)
-        entry["text_quality_assessment"] = assessment
+        assessment = perform_text_quality(model, conversation_str, instruction)
+        entry["text_quality_score"] = assessment
     return data
-
-
-
-# --- Post-Processing Functions ---
-def process_captioning(data, instruction, model):
-    """
-    Process image captioning:
-    For each entry, generate captions for different image variations.
-    """
-    for entry in tqdm(data, desc="Captioning images"):
-        entry["general_caption"] = perform_image_caption(model, entry["image_paths"]["untouched"], instruction)
-    return data
-
-
-def process_caption_scoring(data, instruction, model):
-    """
-    Process caption scoring:
-    For each entry, score existing captions for different image variations.
-    """
-    for entry in tqdm(data, desc="Scoring captions"):
-        options = entry["options"]
-        question = entry["question"]
-        options = filter(lambda x: x != "nan", options)
-        opt_str = ""
-        for i, option in enumerate(options):
-            letter = chr(ord('A') + i)
-            opt_str += f"{opt_str}{letter}. {option}\n"
-
-        question = f"Question: {question}\n{opt_str}"
-        # It is assumed that captions are already generated in the entry.
-        entry["untouched_caption_score"] = perform_caption_scoring(
-            model, question, entry.get("untouched_caption", ""), instruction)
-    return data
-
-
-def process_task_prediction(data, instruction, model):
-    for entry in tqdm(data, desc="Task prediction"):
-        options = entry["options"]
-        question = entry["question"]
-        options = filter(lambda x: x != "nan", options)
-        opt_str = ""
-        for i, option in enumerate(options):
-            letter = chr(ord('A') + i)
-            opt_str += f"{opt_str}{letter}. {option}\n"
-
-        question = f"Question: {question}\n{opt_str}"
-        entry["predicted_task"] = perform_task_prediction(model, question, instruction)
-    return data
-
-
-def process_task_captioning(data, instruction, model):
-    for entry in tqdm(data, desc="Task captioning"):
-        entry["caption"] = perform_task_caption(model, entry["sub-task"], entry["image_paths"]["untouched"],
-                                                instruction)
-    return data
-
-
-def perform_image_quality(model, image_path, instruction):
-    """
-    Perform an image quality assessment using the image API.
-    """
-    image_fn = os.path.basename(image_path)
-    image_dir = os.path.dirname(image_path)
-    sys_msg = "You are an evaluator for image quality assessment."
-    prompt = instruction
-    # Call the image API to assess quality
-    response = image_chat(model, sys_msg, prompt, image_fn, 2048, 0.5, CHAT_URL, image_dir)
-    return response['choices'][0]['message']['content']
-
-def perform_text_quality(model, text, instruction):
-    """
-    Perform a text quality assessment using the text API.
-    """
-    sys_msg = "You are an evaluator for text quality assessment."
-    prompt = f"{instruction}\nText: {text}"
-    response = text_chat(model, sys_msg, prompt, 2048, 0.5, CHAT_URL)
-    return response['choices'][0]['message']['content']
 
 
 # --- Task Processor Mapping ---
@@ -246,6 +253,9 @@ def main():
     # Override the global CHAT_URL if provided via argument
     global CHAT_URL
     CHAT_URL = args.chat_url
+    # Override the global IMAGE_BASE if provided via argument
+    global IMAGE_BASE
+    IMAGE_BASE = args.image_base
 
     # Load instructions from the instruction set file.
     instructions = load_instructions(args.instruction_file)

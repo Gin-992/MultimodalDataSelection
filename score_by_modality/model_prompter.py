@@ -154,7 +154,12 @@ def process_captioning(data, instruction, model):
     For each entry, generate captions for different image variations.
     """
     for entry in tqdm(data, desc="Captioning images"):
-        entry["general_caption"] = perform_image_caption(model, entry["image"], instruction)
+        # Skip entries without an image path or missing files
+        image_path = entry.get("image")
+        if not image_path:
+            continue
+        # Generate the caption using the image API
+        entry["general_caption"] = perform_image_caption(model, image_path, instruction)
     return data
 
 
@@ -185,8 +190,12 @@ def process_task_prediction(data, instruction, model):
 
 def process_task_captioning(data, instruction, model):
     for entry in tqdm(data, desc="Task captioning"):
-        entry["task_caption"] = perform_task_caption(model, entry["sub-task"], entry["image"],
-                                                     instruction)
+        # Skip entries without an image path or missing files
+        image_path = entry.get("image")
+        if not image_path:
+            continue
+        # Generate task-specific caption using the image API
+        entry["task_caption"] = perform_task_caption(model, entry["sub-task"], image_path, instruction)
     return data
 
 
@@ -204,7 +213,10 @@ def process_image_quality(data, instruction, model):
         "The quality of the image is excellent.": 5,
     }
     for entry in tqdm(data, desc="Assessing image quality"):
-        image_path = entry["image"]
+        # Skip entries without an image path or missing files
+        image_path = entry.get("image")
+        if not image_path:
+            continue
         # Generate image quality assessment using the image API
         assessment = perform_image_quality(model, image_path, instruction)
         if assessment not in quality_map:

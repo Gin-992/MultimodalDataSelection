@@ -3,7 +3,6 @@ import sys
 import json
 import argparse
 
-from click import prompt
 from tqdm import tqdm
 
 # Import chat APIs from the corresponding modules.

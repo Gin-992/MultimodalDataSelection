@@ -69,23 +69,35 @@ def perform_image_caption(model, image_path, instruction):
     image_fn = os.path.basename(full_path)
     image_dir = os.path.dirname(full_path)
     sys_msg = "You are a helpful assistant."
-    response = image_chat(model, sys_msg, instruction, image_fn, 2048, 0.9, CHAT_URL, image_dir)
-    return response['choices'][0]['message']['content']
+    try:
+        response = image_chat(model, sys_msg, instruction, image_fn, 2048, 0.9, CHAT_URL, image_dir)
+        return response['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"[WARN] Caption failed for {image_path!r}: {e}")
+        return ""
 
 
 def perform_caption_scoring(model, question, caption, instruction):
     """Score a caption (for a given image) using the text API."""
     sys_msg = "You are an evaluator for image captions."
     prompt = f"{instruction}\nCaption: {caption}\nQuestion: {question}"
-    response = text_chat(model, sys_msg, prompt, 2048, 0.9, CHAT_URL)
-    return response['choices'][0]['message']['content']
+    try:
+        response = text_chat(model, sys_msg, prompt, 2048, 0.9, CHAT_URL)
+        return response['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"[WARN] Scoring failed for {caption!r}: {e}")
+        return ""
 
 
 def perform_task_prediction(model, question, instruction):
     sys_msg = "You are a helpful assistant."
     prompt = f"{instruction}\nPrediction which task of the following question:\n{question}"
-    response = text_chat(model, sys_msg, prompt, 256, 0.1, CHAT_URL)
-    return response['choices'][0]['message']['content']
+    try:
+        response = text_chat(model, sys_msg, prompt, 256, 0.1, CHAT_URL)
+        return response['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"[WARN] Prediction failed for {question!r}: {e}")
+        return ""
 
 
 def perform_task_caption(model, task, image_path, instructions):
@@ -118,8 +130,12 @@ def perform_task_caption(model, task, image_path, instructions):
         "Future Prediction": "future_prediction_captioning"
     }
     prompt = f"{instructions[task_mapping[task]]}"
-    response = image_chat(model, sys_msg, prompt, image_fn, 2048, 0.1, CHAT_URL, image_dir)
-    return response['choices'][0]['message']['content']
+    try:
+        response = image_chat(model, sys_msg, prompt, image_fn, 2048, 0.1, CHAT_URL, image_dir)
+        return response['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"[WARN] Caption failed for {image_path!r}: {e}")
+        return ""
 
 
 def perform_image_quality(model, image_path, instruction):
@@ -133,8 +149,12 @@ def perform_image_quality(model, image_path, instruction):
     sys_msg = "You are an evaluator for image quality assessment."
     prompt = instruction
     # Call the image API to assess quality
-    response = image_chat(model, sys_msg, prompt, image_fn, 2048, 0.5, CHAT_URL, image_dir)
-    return response['choices'][0]['message']['content']
+    try:
+        response = image_chat(model, sys_msg, prompt, image_fn, 2048, 0.5, CHAT_URL, image_dir)
+        return response['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"[WARN] Quality assessment failed for {image_path!r}: {e}")
+        return ""
 
 
 def perform_text_quality(model, text, instruction):
@@ -143,8 +163,12 @@ def perform_text_quality(model, text, instruction):
     """
     sys_msg = "You are an evaluator for text quality assessment."
     prompt = f"{instruction}\nText: {text}"
-    response = text_chat(model, sys_msg, prompt, 2048, 0.5, CHAT_URL)
-    return response['choices'][0]['message']['content']
+    try:
+        response = text_chat(model, sys_msg, prompt, 2048, 0.5, CHAT_URL)
+        return response['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"[WARN] Quality assessment failed for {text!r}: {e}")
+        return ""
 
 
 # --- Post-Processing Functions ---

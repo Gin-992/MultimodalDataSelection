@@ -1,0 +1,1 @@
+python score_by_modality/score_raw_string.py -i output/MMDS-TextQuality1.json -o output/MMDS-TextQuality-Clean.json -m scores

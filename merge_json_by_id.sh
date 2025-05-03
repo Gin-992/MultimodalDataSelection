@@ -1,0 +1,1 @@
+ython score_by_modality/merge_json_by_id.py -i output/MMDS-ImageQuality1.json output/MMDS-TaskCap1.json output/MMDS-TaskPrediction-Clean.json output/MMDS-TextQuality-Clean.json -o output/MMDS-captions.json

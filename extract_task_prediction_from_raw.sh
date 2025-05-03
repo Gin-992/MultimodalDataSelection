@@ -1,0 +1,1 @@
+python score_by_modality/score_raw_string.py -i output/MMDS-TaskPrediction1.json -o output/MMDS-TaskPrediction-Clean.json -m tasks

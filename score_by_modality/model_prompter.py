@@ -219,7 +219,7 @@ def process_task_captioning(data, instruction, model):
         if not image_path:
             continue
         # Generate task-specific caption using the image API
-        entry["task_caption"] = perform_task_caption(model, entry["sub-task"], image_path, instruction)
+        entry["task_caption"] = perform_task_caption(model, entry["sub_task"], image_path, instruction)
     return data
 
 

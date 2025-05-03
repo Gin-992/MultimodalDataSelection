@@ -1,107 +1,105 @@
+#!/usr/bin/env python3
 import json
 import regex as re
-import statistics
+import argparse
+import sys
 
-with open("/output/task_prediction.json", "r") as f:
-    data = json.load(f)
-# pattern = r'\{.*?\}'
-pattern = r'(?s)(\{(?:[^{}]|(?R))*\}|\[(?:[^\[\]]|(?R))*\])'
-scores = []
-for item in data:
-    predicted_task = item['predicted_task']
-    predicted_task = predicted_task.split("</think>")[-1]
-    matched = re.search(pattern, predicted_task)
-    if matched:
-        json_str3 = matched.group()
-        json_str3.replace("\'", "\"")
-        rating = json.loads(json_str3)
-        item['task'] = rating['task']
-        item['sub-task'] = rating['sub-task']
-    scores.append(item)
-    # untouched_score_raw = item['untouched_score']
-    # matched = re.search(pattern, untouched_score_raw)
-    # if matched:
-    #     json_str1 = matched.group()
-    #     rating = json.loads(json_str1)
-    #     item['untouched_rating'] = rating['rating']
-    #
-    # gaussian_score_raw = item['gaussian_score']
-    # matched = re.search(pattern, untouched_score_raw)
-    # if matched:
-    #     json_str2 = matched.group()
-    #     rating = json.loads(json_str2)
-    #     item['gaussian_rating'] = rating['rating']
-    #
-    # salt_pepper_score_raw = item['salt_pepper_score']
-    # matched = re.search(pattern, salt_pepper_score_raw)
-    # if matched:
-    #     json_str3 = matched.group()
-    #     rating = json.loads(json_str3)
-    #     item['salt_pepper_rating'] = rating['rating']
-    # scores.append(item)
-with open("/output/task_prediction_clean.json", "w") as f:
-    json.dump(scores, f, indent=4, default=str)
+# 用于匹配嵌入在字符串中的 JSON 对象（支持多层嵌套）
+JSON_PATTERN = r'(?s)\{(?:[^{}]|(?R))*\}'
 
-# Filter out entries with any missing rating value and count missing fields
-valid_entries = []
-missing_count = 0
-rating_fields = ["untouched_rating", "gaussian_rating", "salt_pepper_rating"]
+def extract_scores(text):
+    """提取 text_quality_score 中的四项分数"""
+    m = re.search(JSON_PATTERN, text or "")
+    if not m:
+        return None
+    try:
+        scores = json.loads(m.group())
+        return {
+            "rarity": scores.get("Rarity"),
+            "complexity": scores.get("Complexity"),
+            "informativeness": scores.get("Informativeness"),
+            "overall_rating": scores.get("Overall rating")
+        }
+    except json.JSONDecodeError:
+        return None
 
-for entry in scores:
-    missing_in_entry = sum(1 for field in rating_fields if entry.get(field) is None)
-    if missing_in_entry > 0:
-        missing_count += missing_in_entry
-        continue  # discard this entry entirely
-    valid_entries.append(entry)
+def extract_task(pred_text):
+    """提取 predicted_task 中的 task 和 sub-task"""
+    m = re.search(JSON_PATTERN, pred_text or "")
+    if not m:
+        return None
+    try:
+        tj = json.loads(m.group())
+        return {
+            "task": tj.get("task"),
+            "sub_task": tj.get("sub-task")
+        }
+    except json.JSONDecodeError:
+        return None
 
-print(f"Total missing rating fields found (and discarded): {missing_count}\n")
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="从 JSON 中批量提取 text_quality_score 和/或 predicted_task。"
+    )
+    parser.add_argument(
+        '-i', '--input', required=True,
+        help="输入 JSON 文件路径（数组格式）"
+    )
+    parser.add_argument(
+        '-o', '--output', required=True,
+        help="输出 JSON 文件路径"
+    )
+    parser.add_argument(
+        '-m', '--mode', choices=['scores','tasks','all'], default='all',
+        help="要提取的内容："
+             "scores 只提取 text_quality_score；"
+             "tasks 只提取 predicted_task；"
+             "all 同时提取两者（默认）"
+    )
+    return parser.parse_args()
 
-# If there are no valid entries, exit
-if not valid_entries:
-    print("No valid entries available for analysis.")
-    exit()
+def main():
+    args = parse_args()
 
-# Extract ratings from valid entries
-untouched_ratings = [entry["untouched_rating"] for entry in valid_entries]
-gaussian_ratings  = [entry["gaussian_rating"] for entry in valid_entries]
-salt_pepper_ratings = [entry["salt_pepper_rating"] for entry in valid_entries]
+    # 读取整个 JSON 数组
+    try:
+        with open(args.input, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"❌ 无法读取输入文件: {e}", file=sys.stderr)
+        sys.exit(1)
 
-# Helper function to calculate median and standard deviation
-def calc_stats(ratings):
-    med = statistics.median(ratings)
-    # Using sample standard deviation; if you prefer population stdev use statistics.pstdev
-    std = statistics.stdev(ratings) if len(ratings) > 1 else 0
-    return med, std
+    output = []
+    for item in data:
+        rec = {"id": item.get("id")}
 
-untouched_med, untouched_std = calc_stats(untouched_ratings)
-gaussian_med, gaussian_std   = calc_stats(gaussian_ratings)
-salt_pepper_med, salt_pepper_std = calc_stats(salt_pepper_ratings)
+        if args.mode in ('scores','all'):
+            scores = extract_scores(item.get("text_quality_score"))
+            if scores:
+                rec.update(scores)
+            else:
+                # 如果严格要求 presence，可在这里跳过：continue
+                pass
 
-# Calculate shifts for each valid entry:
-# shift_ug = untouched_rating - gaussian_rating
-# shift_us = untouched_rating - salt_pepper_rating
-shifts_ug = [entry["untouched_rating"] - entry["gaussian_rating"] for entry in valid_entries]
-shifts_us = [entry["untouched_rating"] - entry["salt_pepper_rating"] for entry in valid_entries]
+        if args.mode in ('tasks','all'):
+            task_info = extract_task(item.get("predicted_task"))
+            if task_info:
+                rec["task"] = task_info["task"]
+                rec["sub_task"] = task_info["sub_task"]
+            else:
+                # 同上，可根据需要跳过
+                pass
 
-# Calculate average shifts
-avg_shift_ug = sum(shifts_ug) / len(shifts_ug) if shifts_ug else 0
-avg_shift_us = sum(shifts_us) / len(shifts_us) if shifts_us else 0
+        output.append(rec)
 
-# Display the results
-print("Rating Statistics:")
-print("------------------")
-print(f"Untouched Rating: median = {untouched_med}, standard deviation = {untouched_std}")
-print(f"Gaussian Rating:  median = {gaussian_med}, standard deviation = {gaussian_std}")
-print(f"Salt & Pepper Rating: median = {salt_pepper_med}, standard deviation = {salt_pepper_std}\n")
+    # 写入输出
+    try:
+        with open(args.output, 'w', encoding='utf-8') as f:
+            json.dump(output, f, ensure_ascii=False, indent=4)
+        print(f"✅ 成功处理 {len(output)} 条记录，结果保存至 {args.output}")
+    except Exception as e:
+        print(f"❌ 无法写入输出文件: {e}", file=sys.stderr)
+        sys.exit(1)
 
-print("Average Shifts:")
-print("---------------")
-print(f"Average shift (untouched - gaussian) = {avg_shift_ug}")
-print(f"Average shift (untouched - salt_pepper) = {avg_shift_us}")
-
-# For each valid entry, also print the individual shifts if needed:
-print("\nIndividual Entry Shifts:")
-for i, entry in enumerate(valid_entries, start=1):
-    shift_ug = entry["untouched_rating"] - entry["gaussian_rating"]
-    shift_us = entry["untouched_rating"] - entry["salt_pepper_rating"]
-    print(f"Entry {i}: shift (untouched - gaussian) = {shift_ug}, shift (untouched - salt_pepper) = {shift_us}")
+if __name__ == '__main__':
+    main()

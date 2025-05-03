@@ -36,9 +36,22 @@ def extract_task(pred_text):
     except json.JSONDecodeError:
         return None
 
+def extract_caption_score(text):
+    """提取 caption_score 中的 rating 和 explanation"""
+    m = re.search(JSON_PATTERN, text or "")
+    if not m:
+        return None
+    try:
+        cs = json.loads(m.group())
+        return {
+            "mm_rating": cs.get("rating"),
+        }
+    except json.JSONDecodeError:
+        return None
+
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="在原 JSON 对象中添加 text_quality_score 和/或 predicted_task 的解析结果。"
+        description="在原 JSON 对象中添加解析结果：text_quality_score、predicted_task 和/或 caption_score。"
     )
     parser.add_argument(
         '-i', '--input', required=True,
@@ -49,11 +62,14 @@ def parse_args():
         help="输出 JSON 文件路径"
     )
     parser.add_argument(
-        '-m', '--mode', choices=['scores','tasks','all'], default='all',
-        help="要提取的内容："
-             "scores 只提取 text_quality_score；"
-             "tasks 只提取 predicted_task；"
-             "all 同时提取两者（默认）"
+        '-m', '--mode', choices=['scores','tasks','captions','all'], default='all',
+        help=(
+            "要提取的内容：\n"
+            " scores    — 只提取 text_quality_score；\n"
+            " tasks     — 只提取 predicted_task；\n"
+            " captions  — 只提取 caption_score；\n"
+            " all       — 同时提取三者（默认）"
+        )
     )
     return parser.parse_args()
 
@@ -74,21 +90,17 @@ def main():
             scores = extract_scores(item.get("text_quality_score"))
             if scores:
                 item.update(scores)
-            else:
-                # 可选：如果一定要保证存在 scores，则取消下一行注释
-                # print(f"⚠️ 无法提取 text_quality_score for id={item.get('id')}", file=sys.stderr)
-                pass
 
         if args.mode in ('tasks', 'all'):
             task_info = extract_task(item.get("predicted_task"))
             if task_info:
-                # 添加两个新字段
                 item["task"] = task_info["task"]
                 item["sub_task"] = task_info["sub_task"]
-            else:
-                # 可选：如果一定要保证存在 task_info，则取消下一行注释
-                # print(f"⚠️ 无法提取 predicted_task for id={item.get('id')}", file=sys.stderr)
-                pass
+
+        if args.mode in ('captions', 'all'):
+            cap_info = extract_caption_score(item.get("caption_score"))
+            if cap_info:
+                item.update(cap_info)
 
     # 3. 写入新的 JSON 文件
     try:

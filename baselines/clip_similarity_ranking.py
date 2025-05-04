@@ -10,7 +10,14 @@ def compute_similarity(image: Image.Image, text: str, processor, model, device) 
     """
     Compute cosine‐based similarity between an image and a text string using CLIP.
     """
-    inputs = processor(text=[text], images=image, return_tensors="pt", padding=True).to(device)
+    inputs = processor(
+        text=[text],
+        images=image,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=processor.tokenizer.model_max_length
+    ).to(device)
     with torch.no_grad():
         logits = model(**inputs).logits_per_image
         probs = F.softmax(logits, dim=1)

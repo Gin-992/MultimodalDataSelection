@@ -4,6 +4,7 @@ import argparse
 import torch
 import torch.nn.functional as F
 from PIL import Image
+from tqdm import tqdm
 from transformers import CLIPProcessor, CLIPModel
 
 def compute_similarity(image: Image.Image, text: str, processor, model, device) -> float:
@@ -46,7 +47,7 @@ def main():
     with open(args.json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    for entry in data:
+    for entry in tqdm(data):
         img_rel = entry.get("image", "")
         img_path = os.path.join(args.image_dir, img_rel)
         try:

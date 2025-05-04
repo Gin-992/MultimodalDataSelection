@@ -49,7 +49,8 @@ def main():
             entry["similarity_score"] = None
             continue
 
-        text  = entry.get("general_caption", "")
+        conv = entry.get("conversations", [])
+        text = " \n".join([c.get("value", "") for c in conv]).strip()
         score = compute_similarity(image, text, processor, model, device)
         entry["similarity_score"] = score
 

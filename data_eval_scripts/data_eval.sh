@@ -1,6 +1,6 @@
 HOME_DIR=$(readlink -m ..)
 
-PYTHONPATH=$HOME_DIR python score_by_modality/model_prompter.py \
+PYTHONPATH=$HOME_DIR python $HOME_DIR/score_by_modality/model_prompter.py \
   --task $TASK \
   --image-base $IMAGE_DIR \
   --input_json $INPUT_JSON \

@@ -1,0 +1,14 @@
+parameters:
+  task:
+    values ['split']
+  input_json:
+    values: [ 'MMDS-SampledDataPool/MMDS-GeneralCaptions.json' ]
+  output_json:
+    values: ['output/split_annos']
+
+  bash_file:
+    values: ['split_aggregate_json.sh']
+  n_cpu: # if you need more GPUs, make sure n_cpu and memory are equal ton_gpu * (current value)
+    values: [ 12 ]
+  memory:
+    values: [ 23040 ]

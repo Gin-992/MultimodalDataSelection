@@ -6,7 +6,7 @@ parameters:
   input_json:
     values: ['MMDS-SampledDataPool/MMDS-GeneralCaptions.json']
   output_json:
-    values: ['output/MMDS-Caption0.json']
+    values: ['output/MMDS-ImageQuality0.json']
   model:
     values: ['q-sit']
   chat_url:

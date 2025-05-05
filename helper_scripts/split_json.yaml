@@ -5,6 +5,8 @@ parameters:
     values: [ 'MMDS-SampledDataPool/MMDS-GeneralCaptions.json' ]
   output_json:
     values: ['output/split_annos']
+  n_split:
+    values: [ 10 ]
 
   bash_file:
     values: ['split_aggregate_json.sh']

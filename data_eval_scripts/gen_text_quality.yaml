@@ -1,0 +1,22 @@
+parameters:
+  task:
+    values: ['text_quality_assessment']
+  image_dir:
+    values: [ 'MMDS-SampledDataPool/images' ]
+  input_json:
+    values: [ 'MMDS-SampledDataPool/MMDS-GeneralCaptions.json' ]
+  output_json:
+    values: ['output/MMDS-TaskPrediction0.json']
+  model:
+    values: ['Qwen2.5-32B-Instruct-AWQ']
+  chat_url:
+    values: ['http://0.0.0.0:8000/v1/chat/completions']
+
+  bash_file:
+    values: ['data_eval.sh']
+  n_cpu: # if you need more GPUs, make sure n_cpu and memory are equal ton_gpu * (current value)
+    values: [ 12 ]
+  n_gpu:
+    values: [ 1 ]
+  memory:
+    values: [ 23040 ]

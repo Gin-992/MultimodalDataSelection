@@ -34,6 +34,9 @@
 ## 🚀 Usage
 
 ```bash
+# Concat all image file tars and untar
+python launch_job.py --job_config untar_images.yaml
+
 # (Optional) Split annotation file for multi-GPU inference
 python launch_job.py --job_config split_json.yaml
 

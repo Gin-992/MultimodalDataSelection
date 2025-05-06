@@ -1,4 +1,6 @@
-vllm serve $MODEL_PATH --served-model-name $MODEL --host $HOST --port $PORT  > output/caption-sevice-0.log 2>&1 &
+vllm serve $MODEL_PATH --served-model-name $MODEL --host $HOST --port $PORT  > output/model-infer-service.log 2>&1 &
+
+sleep 2000
 
 python score_by_modality/model_prompter_overwrite.py \
   --task $TASK \

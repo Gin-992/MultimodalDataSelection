@@ -1,12 +1,12 @@
 parameters:
   task:
-    values ['split']
+    values: ['split']
   input_json:
-    values: [ 'MMDS-SampledDataPool/MMDS-GeneralCaptions.json' ]
-  output_json:
-    values: ['output/split_annos']
+    values: [ '/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/MMDS-GeneralCaptions.json' ]
+  output_dir:
+    values: ['/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/split_annos']
   n_split:
-    values: [ 10 ]
+    values: [ 60 ]
 
   bash_file:
     values: ['split_aggregate_json.sh']

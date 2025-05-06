@@ -44,7 +44,7 @@ python launch_job.py --job_config split_json.yaml
 python launch_job.py --job_config gen_task_prediction.yaml
 
 # Parse predictions
-python launch_job.py --job_config task_prediction_from_str.yaml
+python launch_job.py --job_config retrieve_task_domin.yaml
 
 # Task-specific captioning
 python launch_job.py --job_config gen_task_cap.yaml
@@ -54,6 +54,9 @@ python launch_job.py --job_config gen_g_cap.yaml
 
 # Multimodal scoring
 python launch_job.py --job_config gen_mm_score.yaml
+
+# Parse MM scoring
+python launch_job.py --job_config retrieve_mm_score_domin.yaml
 
 # Image quality rating
 python launch_job.py --job_config gen_image_quality.yaml

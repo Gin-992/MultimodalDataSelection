@@ -1,0 +1,8 @@
+parameters:
+
+  bash_file:
+    values: ['untar_images.sh']
+  n_cpu: # if you need more GPUs, make sure n_cpu and memory are equal ton_gpu * (current value)
+    values: [ 12 ]
+  memory:
+    values: [ 23040 ]

@@ -24,7 +24,7 @@ datasets=$DATASET
 
 # Output configuration
 run_name=$RUN_NAME
-output_dir=./output
+output_dir=./$RUN_NAME
 
 # Training arguments
 args="

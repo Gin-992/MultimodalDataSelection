@@ -52,10 +52,10 @@ python launch_job.py --job_config gen_task_cap.yaml
 # General captioning (DONE)
 python launch_job.py --job_config gen_g_cap.yaml
 
-# Multimodal scoring
+# Multimodal rating
 python launch_job.py --job_config gen_mm_score.yaml
 
-# Parse MM scoring
+# Parse MM rating
 python launch_job.py --job_config retrieve_mm_score_domin.yaml
 
 # Image quality rating
@@ -63,6 +63,9 @@ python launch_job.py --job_config gen_image_quality.yaml
 
 # Text quality rating
 python launch_job.py --job_config gen_text_quality.yaml
+
+# Parse Text rating
+python launch_job.py --job_config retrieve_text_score_domin.yaml
 ```
 
 Each `--job_config` flag points to a YAML file in the `data_eval_scripts/` and `helper_scripts/` directory that specifies:

@@ -244,7 +244,9 @@ def process_image_quality(data, instruction, model):
         # Generate image quality assessment using the image API
         assessment = perform_image_quality(model, image_path, instruction)
         if assessment not in quality_map:
-            raise ValueError(f"Unexpected quality assessment: {assessment}")
+            entry["image_quality_score"] = 0
+            print(f"Unexpected quality assessment: {assessment}")
+            continue
         entry["image_quality_score"] = quality_map[assessment]
     return data
 

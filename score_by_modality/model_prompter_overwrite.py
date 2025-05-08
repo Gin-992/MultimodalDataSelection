@@ -242,6 +242,7 @@ def process_image_quality(data, instruction, model):
         if assessment not in quality_map:
             entry["image_quality_score"] = 0
             print(f"Unexpected quality assessment: {assessment}")
+            continue
         entry["image_quality_score"] = quality_map[assessment]
     return data
 

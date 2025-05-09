@@ -197,7 +197,7 @@ def process_caption_scoring(data, instruction, model):
         conversation_str = concat_conversations(entry["conversations"])
 
         # It is assumed that captions are already generated in the entry.
-        caption = f"General caption: {entry['general_caption']}\nDetail caption: {entry['task_caption']}"
+        caption = f"General caption: {entry['general_caption']}\nDetail caption: {entry.get('task_caption', '')}"
         entry["caption_score"] = perform_caption_scoring(
             model, conversation_str, caption, instruction)
     return data

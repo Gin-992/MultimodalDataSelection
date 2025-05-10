@@ -11,7 +11,7 @@ parameters:
     values: ['MMMU_DEV_VAL', 'MathVista_MINI', 'MMBench_TEST_EN', 'MME-RealWorld-Lite', 'MME', 'MMVet']
 
   bash_file:
-    values: [ 'qwen-vl-finetune/scripts/sft_7b_mmds.sh' ]
+    values: [ 'benchmark_evaluation.sh' ]
   n_cpu: # if you need more GPUs, make sure n_cpu and memory are equal ton_gpu * (current value)
     values: [ 48 ]
   n_gpu:

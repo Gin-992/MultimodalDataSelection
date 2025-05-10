@@ -87,6 +87,9 @@ python launch_job.py --job_config train_qwen_mm.yaml
 
 ## Evaluation
 
+Download current trained baseline models from here.
+https://modelscope.cn/models/Endlinc/MMDS-SFT-Models/files
+
 ```commandline
 # Eval Qwen
 python launch_job.py --job_config benchmark_qwen_full_data.yaml

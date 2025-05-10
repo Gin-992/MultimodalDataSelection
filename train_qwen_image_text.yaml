@@ -8,9 +8,9 @@ parameters:
   model_path:
     values: ['/mnt/hdfs/andrew.estornell/vlm/Qwen2.5-VL-7B-Instruct']
   dataset:
-    values: ['mmds_tqa']
+    values: ['mmds_itqa']
   run_name:
-    values: ['qwen2vl-text-quality']
+    values: ['qwen2vl-image-text-quality']
   nproc_per_node:
     values: [8]
 

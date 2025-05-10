@@ -70,15 +70,17 @@ python launch_job.py --job_config retrieve_text_score_domin.yaml
 
 Each `--job_config` flag points to a YAML file in the `data_eval_scripts/` and `helper_scripts/` directory that specifies:
 
-## 📄 Output
+## 📄 Train Scripts
 
-* **Task predictions:** `outputs/task_predictions.jsonl`
-* **Captions:**
+### Train Qwen2.5-VL-7B.
 
-  * Task-specific: `outputs/task_captions.jsonl`
-  * General: `outputs/general_captions.jsonl`
-* **Scores:**
+```bash
+# Train Qwen for Text Quality ranking data.
+python launch_job.py --job_config train_qwen_tqa.yaml
 
-  * Multimodal: `outputs/mm_scores.csv`
-  * Image quality: `outputs/image_quality.csv`
-  * Text quality: `outputs/text_quality.csv`
+# Train Qwen for Image only and Text only Quality ranking data.
+python launch_job.py --job_config train_qwen_image_text.yaml
+
+# Train Qwen for Multimodal Quality ranking data.
+python launch_job.py --job_config train_qwen_mm.yaml
+```

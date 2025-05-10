@@ -10,7 +10,7 @@ parameters:
   dataset:
     values: ['mmds_mm']
   run_name:
-    values: ['qwen2vl-full-data']
+    values: ['qwen2vl-multimodal-quality']
   nproc_per_node:
     values: [8]
 

@@ -11,6 +11,16 @@ MMDS_CLIP_BASE = {
     "data_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/images",
 }
 
+MMDS_TQA_BASE = {
+    "annotation_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/MMDS-TQA-T10.json",
+    "data_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/images",
+}
+
+MMDS_MM = {
+    "annotation_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/MMDS-T10.json",
+    "data_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/images",
+}
+
 CAMBRIAN_737K = {
     "annotation_path": "PATH_TO_CAMBRIAN_737K_ANNOTATION",
     "data_path": "",
@@ -39,6 +49,8 @@ VIDEOCHATGPT = {
 data_dict = {
     "mmds_full": MMDS_FULL_DATA,
     "mmds_clip": MMDS_CLIP_BASE,
+    "mmds_tqa": MMDS_TQA_BASE,
+    "mmds_mm": MMDS_MM,
     "cambrian_737k": CAMBRIAN_737K,
     "cambrian_737k_pack": CAMBRIAN_737K_PACK,
     "mp_doc": MP_DOC,

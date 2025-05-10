@@ -1,0 +1,24 @@
+parameters:
+  master_addr:
+    values: ['127.0.0.1']
+  master_port:
+    values: ['20001']
+  nnodes:
+    values: [1]
+  model_path:
+    values: ['/mnt/hdfs/andrew.estornell/vlm/Qwen2.5-VL-7B-Instruct']
+  dataset:
+    values: ['mmds_tqa']
+  run_name:
+    values: ['qwen2vl-full-data']
+  nproc_per_node:
+    values: [8]
+
+  bash_file:
+    values: [ 'qwen-vl-finetune/scripts/sft_7b_mmds.sh' ]
+  n_cpu: # if you need more GPUs, make sure n_cpu and memory are equal ton_gpu * (current value)
+    values: [ 48 ]
+  n_gpu:
+    values: [ 8 ]
+  memory:
+    values: [ 92160 ]

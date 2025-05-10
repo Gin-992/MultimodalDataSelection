@@ -84,3 +84,10 @@ python launch_job.py --job_config train_qwen_image_text.yaml
 # Train Qwen for Multimodal Quality ranking data.
 python launch_job.py --job_config train_qwen_mm.yaml
 ```
+
+## Evaluation
+
+```commandline
+# Eval Qwen
+python launch_job.py --job_config benchmark_qwen_full_data.yaml
+```

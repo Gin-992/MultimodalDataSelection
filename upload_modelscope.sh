@@ -1,0 +1,1 @@
+modelscope upload Endlinc/MMDS-SampledDataPool /mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/split_annos/ / --repo-type dataset --include '*.json' --exclude '*.log' --commit-message 'init' --commit-description 'my first commit' --token 'e277ae6f-c2f9-497b-b5d2-917a947a190d' --max-workers 16 --endpoint 'https://www.modelscope.cn'

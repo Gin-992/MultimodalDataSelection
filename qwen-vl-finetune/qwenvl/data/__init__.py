@@ -12,17 +12,17 @@ MMDS_CLIP_BASE = {
 }
 
 MMDS_TQA_BASE = {
-    "annotation_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/MMDS-TQA-T10.json",
+    "annotation_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/Text-Score-Top50K.json",
     "data_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/images",
 }
 
 MMDS_ITQA_BASE = {
-    "annotation_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/MMDS-ITQA-T10.json",
+    "annotation_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/I-T-Score-Top50K.json",
     "data_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/images",
 }
 
 MMDS_MM = {
-    "annotation_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/MMDS-T10.json",
+    "annotation_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/MM-Score-Top50K.json",
     "data_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/images",
 }
 

@@ -1,11 +1,11 @@
 parameters:
   model:
-    values: ['MMDS-SFT-Models/qwen2.5vl-baselin-clip',
-             'MMDS-SFT-Models/qwen2.5vl-baselin-full',
-             'MMDS-SFT-Models/qwen2.5vl-baselin-iqa',
-             'MMDS-SFT-Models/qwen2.5vl-baselin-random1',
-             'MMDS-SFT-Models/qwen2.5vl-baselin-random2',
-             'MMDS-SFT-Models/qwen2.5vl-baselin-random3'
+    values: ['/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-clip',
+             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-full',
+             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-iqa',
+             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-random1',
+             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-random2',
+             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-random3'
     ]
   benchmarks:
     values: ['MMMU_DEV_VAL', 'MathVista_MINI', 'MMBench_TEST_EN', 'MME-RealWorld-Lite', 'MME', 'MMVet']

@@ -1,0 +1,2 @@
+cp -r /mnt/hdfs/andrew.estornell/vlm/ouput /mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/
+modelscope upload Endlinc/MMDS-SampledDataPool /mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/ouput / --repo-type dataset --include '*' --exclude '*.log' --commit-message 'init' --commit-description 'my first commit' --token 'e277ae6f-c2f9-497b-b5d2-917a947a190d' --max-workers 16 --endpoint 'https://www.modelscope.cn'

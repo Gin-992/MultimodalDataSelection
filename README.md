@@ -91,6 +91,9 @@ Download current trained baseline models from here.
 https://modelscope.cn/models/Endlinc/MMDS-SFT-Models/files
 
 ```commandline
+# Eval Original Model
+python launch_job.py --job_config benchmark_original.yaml
+
 # Eval Qwen
 python launch_job.py --job_config benchmark_qwen_full_data.yaml
 ```

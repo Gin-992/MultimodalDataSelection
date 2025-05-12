@@ -1,0 +1,14 @@
+parameters:
+  model:
+    values: ['Qwen/Qwen2.5-VL-7B-Instruct-AWQ']
+  benchmarks:
+    values: ['MMMU_DEV_VAL', 'MathVista_MINI', 'MMBench_TEST_EN', 'MME-RealWorld-Lite', 'MME', 'MMVet']
+
+  bash_file:
+    values: [ 'benchmark_evaluation.sh' ]
+  n_cpu: # if you need more GPUs, make sure n_cpu and memory are equal ton_gpu * (current value)
+    values: [ 48 ]
+  n_gpu:
+    values: [ 2 ]
+  memory:
+    values: [ 92160 ]

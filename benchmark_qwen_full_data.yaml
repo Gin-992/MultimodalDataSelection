@@ -3,9 +3,13 @@ parameters:
     values: ['/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-clip',
              '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-full',
              '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-iqa',
+             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2vl-text-quality',
+             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2vl-image-text-quality',
+             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2vl-multimodal-quality',
              '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-random1',
              '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-random2',
-             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-random3'
+             '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-random3',
+             'Qwen/Qwen2.5-VL-7B-Instruct-AWQ'
     ]
   benchmarks:
     values: ['MMBench_TEST_EN', 'MME', 'Q-Bench1_TEST', 'LLaVABench', 'ScienceQA_TEST',

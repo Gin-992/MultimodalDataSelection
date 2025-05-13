@@ -2,7 +2,9 @@ parameters:
   model:
     values: ['Qwen/Qwen2.5-VL-7B-Instruct-AWQ']
   benchmarks:
-    values: ['MMMU_DEV_VAL', 'MathVista_MINI', 'MMBench_TEST_EN', 'MME-RealWorld-Lite', 'MME', 'MMVet']
+    values: ['MMBench_TEST_EN', 'MME', 'Q-Bench1_TEST', 'LLaVABench', 'ScienceQA_TEST',
+             'A-OKVQA', 'CRPE_EXIST', 'CRPE_RELATION', 'GQA_TestDev_Balanced', 'VizWiz',
+            'SEEDBench_IMG']
 
   bash_file:
     values: [ 'benchmark_evaluation.sh' ]

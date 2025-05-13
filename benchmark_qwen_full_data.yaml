@@ -8,7 +8,9 @@ parameters:
              '/mnt/hdfs/andrew.estornell/vlm/MMDS-SFT-Models/qwen2.5vl-baselin-random3'
     ]
   benchmarks:
-    values: ['MMMU_DEV_VAL', 'MathVista_MINI', 'MMBench_TEST_EN', 'MME-RealWorld-Lite', 'MME', 'MMVet']
+    values: ['MMBench_TEST_EN', 'MME', 'Q-Bench1_TEST', 'LLaVABench', 'ScienceQA_TEST',
+             'A-OKVQA', 'CRPE_EXIST', 'CRPE_RELATION', 'GQA_TestDev_Balanced', 'VizWiz',
+            'SEEDBench_IMG']
 
   bash_file:
     values: [ 'benchmark_evaluation.sh' ]

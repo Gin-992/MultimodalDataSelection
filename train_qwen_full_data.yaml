@@ -8,7 +8,7 @@ parameters:
   model_path:
     values: ['/mnt/hdfs/andrew.estornell/vlm/Qwen2.5-VL-7B-Instruct']
   dataset:
-    values: ['mmds_full']
+    values: ['mmds_mm_100k']
   run_name:
     values: ['qwen2vl-full-data']
   nproc_per_node:

@@ -26,6 +26,11 @@ MMDS_MM = {
     "data_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/images",
 }
 
+MMDS_MM_100K = {
+    "annotation_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/MM-Score-Top100K.json",
+    "data_path": "/mnt/hdfs/andrew.estornell/vlm/MMDS-SampledDataPool/images",
+}
+
 CAMBRIAN_737K = {
     "annotation_path": "PATH_TO_CAMBRIAN_737K_ANNOTATION",
     "data_path": "",
@@ -57,6 +62,7 @@ data_dict = {
     "mmds_tqa": MMDS_TQA_BASE,
     "mmds_itqa": MMDS_ITQA_BASE,
     "mmds_mm": MMDS_MM,
+    "mmds_mm_100k": MMDS_MM_100K,
     "cambrian_737k": CAMBRIAN_737K,
     "cambrian_737k_pack": CAMBRIAN_737K_PACK,
     "mp_doc": MP_DOC,

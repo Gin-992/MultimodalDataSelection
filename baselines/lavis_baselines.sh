@@ -1,0 +1,5 @@
+python baselines/lavis_similarity_ranking.py --model albef_feature_extractor --json_path /mnt/shared_resources/datasets/MMDS-DataPool/MMDS-SampledDataPool/iqa_rating.json --image_dir /mnt/shared_resources/datasets/MMDS-DataPool/train-images/ --output_json ./albef_ranking.json --device cuda --top_output_json ./albef_ranking_t_10.json
+
+python baselines/lavis_similarity_ranking.py --model blip_feature_extractor --json_path /mnt/shared_resources/datasets/MMDS-DataPool/MMDS-SampledDataPool/iqa_rating.json --image_dir /mnt/shared_resources/datasets/MMDS-DataPool/train-images/ --output_json ./blip_ranking.json --device cuda --top_output_json ./blip_ranking_t_10.json
+
+python baselines/lavis_similarity_ranking.py --model blip2_feature_extractor --json_path /mnt/shared_resources/datasets/MMDS-DataPool/MMDS-SampledDataPool/iqa_rating.json --image_dir /mnt/shared_resources/datasets/MMDS-DataPool/train-images/ --output_json ./blip2_ranking.json --device cuda --top_output_json ./blip2_ranking_t_10.json
